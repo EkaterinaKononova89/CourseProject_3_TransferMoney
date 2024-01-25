@@ -1,4 +1,4 @@
-package ru.netology.CourseProject_3_TransferMoney.configurations;
+package ru.netology.CourseProject_3_TransferMoney.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

@@ -1,15 +1,17 @@
 package ru.netology.CourseProject_3_TransferMoney.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import ru.netology.CourseProject_3_TransferMoney.Logger.Logger;
-import ru.netology.CourseProject_3_TransferMoney.error.ErrorConfirmation;
-import ru.netology.CourseProject_3_TransferMoney.error.ErrorInputData;
-import ru.netology.CourseProject_3_TransferMoney.error.ErrorTransfer;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import ru.netology.CourseProject_3_TransferMoney.handler.ExceptionController;
 import ru.netology.CourseProject_3_TransferMoney.model.ConfirmOperation;
 import ru.netology.CourseProject_3_TransferMoney.model.DataForm;
+import ru.netology.CourseProject_3_TransferMoney.model.OperationId;
 import ru.netology.CourseProject_3_TransferMoney.resolver.ConfirmOperationParam;
 import ru.netology.CourseProject_3_TransferMoney.resolver.DataFormParam;
 import ru.netology.CourseProject_3_TransferMoney.servise.TransferService;
@@ -18,44 +20,28 @@ import java.io.IOException;
 
 @RestController
 @Validated
-public class TransferController {
-    TransferService transferService;
-
-    public TransferController(TransferService transferService) {
-        this.transferService = transferService;
-    }
+@AllArgsConstructor
+public class TransferController extends ExceptionController implements Controller {
+    private final TransferService transferService;
 
     @PostMapping("/transfer")
     @CrossOrigin
-    public String transferMoney( @RequestBody @DataFormParam DataForm dataForm) throws IOException {
-        return transferService.transferMoney(dataForm);
+    public ResponseEntity<OperationId> transferMoney(@RequestBody @DataFormParam DataForm dataForm) {
+        try {
+            return new ResponseEntity<>(transferService.transferMoney(dataForm), HttpStatus.OK);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/confirmOperation")
     @CrossOrigin
-    public String transferMoneyConfirm( @RequestBody @ConfirmOperationParam ConfirmOperation confirmOperation) throws IOException {
-        confirmOperation.setOperationId(transferService.cntId()); // вспомогательный метод для корректной работы фронта в однопоточной среде
-        return transferService.confirmOperation(confirmOperation);
-    }
-
-    @ExceptionHandler(ErrorInputData.class)
-    public ResponseEntity<String> eidHandler(ErrorInputData ex) throws IOException{
-        Logger logger = Logger.getInstance();
-        logger.log(ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ErrorTransfer.class)
-    public ResponseEntity<String> etHandler(ErrorTransfer ex) throws IOException{
-        Logger logger = Logger.getInstance();
-        logger.log(ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(ErrorConfirmation.class)
-    public ResponseEntity<String> ecHandler(ErrorConfirmation ex) throws IOException{
-        Logger logger = Logger.getInstance();
-        logger.log(ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<OperationId> transferMoneyConfirm(@RequestBody @ConfirmOperationParam ConfirmOperation confirmOperation) {
+        try {
+            confirmOperation.setOperationIdConfirm(transferService.cntId()); // вспомогательный метод для корректной работы фронта в однопоточной среде
+            return new ResponseEntity<>(transferService.confirmOperation(confirmOperation), HttpStatus.OK);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -1,27 +1,21 @@
 package ru.netology.CourseProject_3_TransferMoney.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor // пустой конструктор для работы с Jackson
+@AllArgsConstructor
 public class Amount {
 
     private Integer value;
     private String currency;
 
-    public Amount () { } // пустой конструктор для работы с Jackson
-
-    public Amount(Integer value, String currency) {
-        this.value = value;
-        this.currency = currency;
-    }
-
-    public void setValue(Integer value) {
-        this.value = value;
-    }
-
     @Override
     public String toString() {
-        return "сумма " + value
-                + ", валюта " + currency;
+        return "сумма " + value + ", валюта " + currency;
     }
 }

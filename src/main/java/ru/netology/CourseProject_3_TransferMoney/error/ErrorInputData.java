@@ -4,7 +4,7 @@ public class ErrorInputData extends RuntimeException {
     private final String msg;
     private final int id;
 
-
+    // автогенерация конструктора не подойдет, т.к. поле id меняет тип
     public ErrorInputData(String msg, String operationId) {
         this.msg = msg;
         this.id = Integer.parseInt(operationId);

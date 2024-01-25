@@ -1,8 +1,12 @@
 package ru.netology.CourseProject_3_TransferMoney.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor // пустой конструктор для работы с Jackson
+@AllArgsConstructor
 public class DataForm {
 
     private String cardFromNumber;
@@ -11,16 +15,9 @@ public class DataForm {
     private String cardToNumber;
     private Amount amount;
 
-    public DataForm() {} // пустой конструктор для работы с Jackson
-    public DataForm(String cardFromNumber, String cardFromValidTill, String cardFromCVV, String cardToNumber, Amount amount) {
-        this.cardFromNumber = cardFromNumber;
-        this.cardFromValidTill = cardFromValidTill;
-        this.cardFromCVV = cardFromCVV;
-        this.cardToNumber = cardToNumber;
-        this.amount = amount;
-    }
-    public DataForm divideBy100 () {     // перевод из копеек, которые приходят с фронта, в рубли
-        getAmount().setValue(getAmount().getValue()/100);
+
+    public DataForm divideBy100() {     // перевод из копеек, которые приходят с фронта, в рубли
+        getAmount().setValue(getAmount().getValue() / 100);
         return this;
     }
 }
