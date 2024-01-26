@@ -7,14 +7,13 @@ import ru.netology.CourseProject_3_TransferMoney.logger.Logger;
 import java.io.IOException;
 
 @SpringBootApplication
-//@ComponentScan
 public class CourseProject3TransferMoneyApplication {
 
-	public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
-		Logger logger = Logger.getInstance();
-		logger.log("start");
+        Logger logger = new Logger();
+        logger.log("start");
 
-		SpringApplication.run(CourseProject3TransferMoneyApplication.class, args);
-	}
+        SpringApplication.run(CourseProject3TransferMoneyApplication.class, args);
+    }
 }

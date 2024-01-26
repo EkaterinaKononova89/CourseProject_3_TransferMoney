@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import ru.netology.CourseProject_3_TransferMoney.error.ErrorConfirmation;
 import ru.netology.CourseProject_3_TransferMoney.error.ErrorInputData;
 import ru.netology.CourseProject_3_TransferMoney.error.ErrorTransfer;
+import ru.netology.CourseProject_3_TransferMoney.logger.Logger;
 import ru.netology.CourseProject_3_TransferMoney.model.Amount;
 import ru.netology.CourseProject_3_TransferMoney.model.ConfirmOperation;
 import ru.netology.CourseProject_3_TransferMoney.model.DataForm;
@@ -19,12 +20,13 @@ import java.io.IOException;
 
 public class TransferControllerTest {
     TransferController sut;
+    Logger logger = Mockito.mock(Logger.class);
     TransferService service = Mockito.mock(TransferService.class);
 
 
     @BeforeEach
     public void beforeEach() {
-        sut = new TransferController(service);
+        sut = new TransferController(logger, service);
     }
 
     @AfterEach

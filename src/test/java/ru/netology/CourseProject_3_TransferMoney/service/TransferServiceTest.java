@@ -9,6 +9,7 @@ import ru.netology.CourseProject_3_TransferMoney.bank.Bank;
 import ru.netology.CourseProject_3_TransferMoney.error.ErrorConfirmation;
 import ru.netology.CourseProject_3_TransferMoney.error.ErrorInputData;
 import ru.netology.CourseProject_3_TransferMoney.error.ErrorTransfer;
+import ru.netology.CourseProject_3_TransferMoney.logger.Logger;
 import ru.netology.CourseProject_3_TransferMoney.model.Amount;
 import ru.netology.CourseProject_3_TransferMoney.model.ConfirmOperation;
 import ru.netology.CourseProject_3_TransferMoney.model.DataForm;
@@ -25,10 +26,11 @@ public class TransferServiceTest {
     TransferRepository repository = Mockito.mock(TransferRepository.class);
     CheckCardService checkCard = Mockito.mock(CheckCardService.class);
     Bank bank = Mockito.mock(Bank.class);
+    Logger logger = Mockito.mock(Logger.class);
 
     @BeforeEach
     public void beforeEach() {
-        sut = new TransferService(repository, checkCard, bank);
+        sut = new TransferService(repository, checkCard, bank, logger);
     }
 
     @AfterEach

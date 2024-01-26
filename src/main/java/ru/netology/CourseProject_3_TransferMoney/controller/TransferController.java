@@ -1,6 +1,5 @@
 package ru.netology.CourseProject_3_TransferMoney.controller;
 
-import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.netology.CourseProject_3_TransferMoney.handler.ExceptionController;
+import ru.netology.CourseProject_3_TransferMoney.logger.Logger;
 import ru.netology.CourseProject_3_TransferMoney.model.ConfirmOperation;
 import ru.netology.CourseProject_3_TransferMoney.model.DataForm;
 import ru.netology.CourseProject_3_TransferMoney.model.OperationId;
@@ -20,9 +20,13 @@ import java.io.IOException;
 
 @RestController
 @Validated
-@AllArgsConstructor
 public class TransferController extends ExceptionController implements Controller {
     private final TransferService transferService;
+
+    public TransferController(Logger logger, TransferService transferService){
+        super(logger);
+        this.transferService = transferService;
+    }
 
     @PostMapping("/transfer")
     @CrossOrigin
