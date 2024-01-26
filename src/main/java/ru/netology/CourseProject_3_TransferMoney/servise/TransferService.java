@@ -1,6 +1,6 @@
 package ru.netology.CourseProject_3_TransferMoney.servise;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.netology.CourseProject_3_TransferMoney.bank.Bank;
 import ru.netology.CourseProject_3_TransferMoney.error.ErrorConfirmation;
@@ -17,11 +17,13 @@ import java.io.IOException;
 
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TransferService implements ServiceInterface {
     private final TransferRepository repository;
     private final CheckCardService checkCard;
     private final Bank bank;
+
+    private static final String FILE_NAME = "File.log";
 
     public Integer countCommission(DataForm dataForm) {
         return dataForm.getAmount().getValue() / 100;
@@ -37,7 +39,7 @@ public class TransferService implements ServiceInterface {
         DataForm dataForm = frontDataForm.divideBy100();
         OperationId operationId = repository.createNewOperationId(dataForm);
 
-        synchronized ("File.log") {
+        synchronized (FILE_NAME) {
             logger.log("ЗАПРОС НА ПЕРЕВОД, operationId " + operationId + ": карта отправителя " + dataForm.getCardFromNumber() +
                     ", карта получателя " + dataForm.getCardToNumber() + ", \nсумма " + dataForm.getAmount().getValue());
         }
@@ -50,7 +52,7 @@ public class TransferService implements ServiceInterface {
                     // операция возможна, создаю объект ConfirmOperation
                     OperationId confirmOperationById = repository.createConfirmOperation(operationId);
                     if (confirmOperationById == null) {
-                        synchronized ("File.log") {
+                        synchronized (FILE_NAME) {
                             logger.log(" ОШИБКА перевода с карты " + dataForm.getCardFromNumber() + " на карту " + dataForm.getCardToNumber()
                                     + ", сумма операции c комиссией: " + amountWithCommission + "\nПРИЧИНА ОТКАЗА: ");
                         }
@@ -58,19 +60,19 @@ public class TransferService implements ServiceInterface {
                     }
                     return confirmOperationById;
                 }
-                synchronized ("File.log") {
+                synchronized (FILE_NAME) {
                     logger.log(" ОШИБКА перевода с карты " + dataForm.getCardFromNumber() + " на карту " + dataForm.getCardToNumber()
                             + ", сумма операции c комиссией: " + amountWithCommission + "\nПРИЧИНА ОТКАЗА: ");
                 }
                 throw new ErrorInputData("Error input data - Неверные входные данные. ОТКЛОНЕНО БАНКОМ", operationId.getOperationId());
             }
-            synchronized ("File.log") {
+            synchronized (FILE_NAME) {
                 logger.log(" ОШИБКА перевода с карты " + dataForm.getCardFromNumber() + " на карту " + dataForm.getCardToNumber()
                         + ", сумма операции: " + dataForm.getAmount().getValue() + ". ПРИЧИНА ОТКАЗА: ");
             }
             throw new ErrorInputData("Error input data - Неверные входные данные. КАРТА ПОЛУЧАТЕЛЬ НЕ НАЙДЕНА", operationId.getOperationId());
         }
-        synchronized ("File.log") {
+        synchronized (FILE_NAME) {
             logger.log(" ОШИБКА перевода с карты " + dataForm.getCardFromNumber() + " на карту " + dataForm.getCardToNumber()
                     + ", сумма операции: " + dataForm.getAmount().getValue() + " ПРИЧИНА ОТКАЗА: ");
         }
@@ -84,7 +86,7 @@ public class TransferService implements ServiceInterface {
             if (repository.getMapConfirmOperation().get(confirmOperation.getOperationId()).equals(confirmOperation.getCode())) { // проверяем совпадение введенного кода с требуемым (в данном случае конечно всегда будет совпадать)
 
                 bank.codeTrue(); // говорим банку, что код верный
-                synchronized ("File.log") {
+                synchronized (FILE_NAME) {
                     logger.log(" Успешно! operationId "
                             + confirmOperation.getOperationId() + " Перевод с карты " +
                             repository.getMapOperationID().get(confirmOperation.getOperationId()).getCardFromNumber() + " на карту "
@@ -94,12 +96,12 @@ public class TransferService implements ServiceInterface {
                 }
                 return repository.getOperationIdAndConfirmOperation().get(confirmOperation.getOperationId());
             }
-            synchronized ("File.log") {
+            synchronized (FILE_NAME) {
                 logger.log("ОШИБКА подтверждения операции " + confirmOperation.getOperationId() + " ПРИЧИНА ОТКАЗА:");
             }
             throw new ErrorInputData("Error input data - Неверные входные данные. ВВЕДЕН НЕВЕРНЫЙ КОД", confirmOperation.getOperationId());
         }
-        synchronized ("File.log") {
+        synchronized (FILE_NAME) {
             logger.log("ОШИБКА сервера, операция " + confirmOperation.getOperationId() + " не подтверждена");
         }
         throw new ErrorConfirmation("Error confirmation - ошибка сервера, операция не подтверждена", confirmOperation.getOperationId());
