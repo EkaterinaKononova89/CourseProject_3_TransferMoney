@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  app_tm:
+    build: ./
+    container_name: tm_container
+    ports:
+      - '5500:5500'
